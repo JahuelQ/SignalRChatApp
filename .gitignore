@@ -1,0 +1,16 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.userprefs
+
+# Build Folders
+bin/
+obj/
+
+# Visual Studio Code
+.vscode/
+
+# Other
+*.log
