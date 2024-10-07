@@ -1,0 +1,60 @@
+﻿@page "{username}"
+@model ChatApp.Client.Pages.ChatModel
+@{
+    ViewData["Title"] = "Chat";
+}
+
+<div class="chat-container">
+    <div class="messages" id="messagesList"></div>
+    <input type="text" id="messageInput" placeholder="Type a message..." />
+    <button id="sendButton">Send</button>
+    <button id="toggleThemeButton">Toggle Theme</button>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
+    <script>
+        const username = "@Model.Username";
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("https://localhost:5001/chathub")
+            .build();
+
+        connection.on("ReceiveMessage", function (chatMessage) {
+            const msg = document.createElement('div');
+            msg.textContent = `${chatMessage.user}: ${chatMessage.message}`;
+            document.getElementById('messagesList').appendChild(msg);
+        });
+
+        connection.start().catch(function (err) {
+            return console.error(err.toString());
+        });
+
+        document.getElementById('sendButton').addEventListener('click', function () {
+            const message = document.getElementById('messageInput').value;
+            if (message) {
+                const chatMessage = {
+                    user: username,
+                    message: message,
+                    timestamp: new Date()
+                };
+                connection.invoke('SendMessage', chatMessage).catch(function (err) {
+                    return console.error(err.toString());
+                });
+                document.getElementById('messageInput').value = '';
+            }
+        });
+
+        // Toggle Theme
+        const toggleButton = document.getElementById('toggleThemeButton');
+        const body = document.body;
+        body.classList.add('dark-mode'); // Default is dark mode
+
+        toggleButton.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            body.classList.toggle('light-mode');
+        });
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("https://localhost:7288/chathub")
+            .build();
+    </script>
+}

@@ -5,16 +5,17 @@ namespace ChatApp.Client.Pages
 {
     public class IndexModel : PageModel
     {
-        private readonly ILogger<IndexModel> _logger;
+        [BindProperty]
+        public string Username { get; set; }
 
-        public IndexModel(ILogger<IndexModel> logger)
+        public IActionResult OnPost()
         {
-            _logger = logger;
-        }
+            if (!string.IsNullOrEmpty(Username))
+            {
+                return RedirectToPage("Chat", new { username = Username });
+            }
 
-        public void OnGet()
-        {
-
+            return Page();
         }
     }
 }

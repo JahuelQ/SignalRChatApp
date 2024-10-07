@@ -11,14 +11,14 @@ namespace ChatApp.Server
             // Add SignalR
             builder.Services.AddSignalR();
 
-            builder.WebHost.ConfigureKestrel(options =>
-            {
-                options.ListenLocalhost(7181, listenOptions =>
-                {
-                    listenOptions.UseHttps(); // HTTPS on localhost:7181
-                });
-                options.ListenAnyIP(5140); // HTTP on any IP at port 5140
-            });
+            //builder.WebHost.ConfigureKestrel(options =>
+            //{
+            //    options.ListenLocalhost(7288, listenOptions =>
+            //    {
+            //        listenOptions.UseHttps(); // HTTPS on localhost:7288
+            //    });
+            //    options.ListenAnyIP(5022); // HTTP on any IP at port 5022
+            //});
 
             var app = builder.Build();
 
@@ -29,8 +29,6 @@ namespace ChatApp.Server
             }
 
             app.UseHttpsRedirection();
-
-            app.UseHsts();
 
             app.MapHub<ChatHub>("/chathub");
 
