@@ -7,8 +7,13 @@ namespace ChatApp.Server.Hubs
     {
         public async Task SendMessage (ChatMessage chatMessage)
         {
+            if (string.IsNullOrWhiteSpace(chatMessage.User))
+            {
+                return;
+            }
+
             // Sanitize message to prevent XSS
-            chatMessage.Message = System.Net.WebUtility.HtmlDecode (chatMessage.Message);
+            chatMessage.Message = System.Net.WebUtility.HtmlEncode(chatMessage.Message);
 
             await Clients.All.SendAsync("RecieveMessage", chatMessage);
         }

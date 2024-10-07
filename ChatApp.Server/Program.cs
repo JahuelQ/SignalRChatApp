@@ -30,6 +30,8 @@ namespace ChatApp.Server
 
             app.UseHttpsRedirection();
 
+            app.UseHsts();
+
             app.MapHub<ChatHub>("/chathub");
 
             app.Run();
