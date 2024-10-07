@@ -14,3 +14,11 @@ obj/
 
 # Other
 *.log
+
+# Certificate files
+*.pfx
+*.p12
+*.cer
+
+# User-specific configuration
+appsettings.Development.json
