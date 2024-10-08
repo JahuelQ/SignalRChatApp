@@ -5,56 +5,109 @@
 }
 
 <div class="chat-container">
-    <div class="messages" id="messagesList"></div>
-    <input type="text" id="messageInput" placeholder="Type a message..." />
-    <button id="sendButton">Send</button>
     <button id="toggleThemeButton">Toggle Theme</button>
+    <div class="messages" id="messagesList"></div>
+    <div class="message-input-container">
+        <input type="text" id="messageInput" placeholder="Type a message..." />
+        <button id="sendButton">Send</button>
+    </div>
 </div>
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
     <script>
         const username = "@Model.Username";
+        
         const connection = new signalR.HubConnectionBuilder()
-            .withUrl("https://localhost:5001/chathub")
-            .build();
+        .withUrl("https://localhost:5000/chathub",
+        {
+            withCredentials: true
+        }).build();
 
         connection.on("ReceiveMessage", function (chatMessage) {
+            console.log('Received message:', chatMessage);
+
             const msg = document.createElement('div');
-            msg.textContent = `${chatMessage.user}: ${chatMessage.message}`;
+            msg.classList.add('message');
+
+            const time = new Date(chatMessage.timestamp);
+            const formattedTime = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            msg.innerHTML = `<span class="timestamp">${formattedTime}</span> <strong>${chatMessage.user}:</strong> ${chatMessage.message}`;
             document.getElementById('messagesList').appendChild(msg);
+
+            document.getElementById('messagesList').scrollTop = document.getElementById('messagesList').scrollHeight;
         });
 
-        connection.start().catch(function (err) {
-            return console.error(err.toString());
-        });
+        document.getElementById('sendButton').disabled = true;
 
-        document.getElementById('sendButton').addEventListener('click', function () {
-            const message = document.getElementById('messageInput').value;
-            if (message) {
-                const chatMessage = {
-                    user: username,
-                    message: message,
-                    timestamp: new Date()
-                };
-                connection.invoke('SendMessage', chatMessage).catch(function (err) {
-                    return console.error(err.toString());
-                });
-                document.getElementById('messageInput').value = '';
+        document.getElementById('messageInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendMessage();
             }
         });
+
+        connection.start()
+        .then(function () {
+            console.log('Connected to SignalR hub.');
+            document.getElementById('sendButton').disabled = false;
+        })
+        .catch(function (err) {
+            return console.error('SignalR Connection Error:', err.toString());
+        });
+        
+        document.getElementById('sendButton').addEventListener('click', function () {
+            const message = document.getElementById('messageInput').value;
+            if (message && username) {
+                const chatMessage = {
+                user: username,
+                message: message,
+                timestamp: new Date()
+                };
+                connection.invoke('SendMessage', chatMessage)
+                .then(() => console.log('Message sent:', chatMessage))
+                .catch(function (err) {
+                    return console.error('Error sending message:', err.toString());
+                });
+                document.getElementById('messageInput').value = '';} 
+                else {
+                    alert('You must enter a message and have a username.');
+                }});
 
         // Toggle Theme
         const toggleButton = document.getElementById('toggleThemeButton');
         const body = document.body;
-        body.classList.add('dark-mode'); // Default is dark mode
+        body.classList.add('dark-mode');
 
         toggleButton.addEventListener('click', () => {
             body.classList.toggle('dark-mode');
             body.classList.toggle('light-mode');
         });
-        const connection = new signalR.HubConnectionBuilder()
-            .withUrl("https://localhost:7288/chathub")
-            .build();
+
+        function sendMessage() {
+            const message = document.getElementById('messageInput').value;
+            if (message && username) {
+                const chatMessage = {
+                    user: username,
+                    message: message,
+                    timestamp: new Date()
+                };
+                connection.invoke('SendMessage', chatMessage)
+                    .then(() => console.log('Message sent:', chatMessage))
+                    .catch(function (err) {
+                        return console.error('Error sending message:', err.toString());
+                    });
+                document.getElementById('messageInput').value = '';
+            } else {
+                alert('You must enter a message and have a username.');
+            }
+        }
+
+        // Update the send button click handler
+        document.getElementById('sendButton').addEventListener('click', function () {
+            sendMessage();
+        });
+
     </script>
 }

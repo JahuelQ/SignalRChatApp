@@ -15,7 +15,9 @@ namespace ChatApp.Server.Hubs
             // Sanitize message to prevent XSS
             chatMessage.Message = System.Net.WebUtility.HtmlEncode(chatMessage.Message);
 
-            await Clients.All.SendAsync("RecieveMessage", chatMessage);
+            Console.WriteLine($"Broadcasting message from {chatMessage.User}: {chatMessage.Message}");
+
+            await Clients.All.SendAsync("ReceiveMessage", chatMessage);
         }
     }
 }
