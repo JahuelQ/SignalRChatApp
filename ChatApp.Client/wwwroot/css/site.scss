@@ -1,9 +1,20 @@
-﻿$background-dark: #121212;
-$background-light: #ffffff;
-$text-dark: #ffffff;
+﻿$background-dark: #0e1621;
+$background-light: #f0f0f0;
+$text-dark: #ededec;
 $text-light: #000000;
+$message-background-dark: #3a3a3a;
+$message-background-light: #ffffff;
+$primary-color: #5baeff;
+$border-color-dark: #444444;
+$border-color-light: #cccccc;
+$border-color: $border-color-dark;
 
-body {
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    height: 100%;
+
     &.dark-mode {
         background-color: $background-dark;
         color: $text-dark;
@@ -15,30 +26,233 @@ body {
     }
 }
 
-.chat-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    .messages {
-        width: 80%;
-        height: 60vh;
-        border: 1px solid #ccc;
-        overflow-y: scroll;
-        margin-bottom: 10px;
-    }
-
-    #messageInput {
-        width: 80%;
-        padding: 10px;
-    }
+* {
+    box-sizing: border-box;
 }
 
 .login-container {
+    height: calc(100vh - 70px);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh;
+    margin: 0 auto;
+
+    h2 {
+        margin-bottom: 20px;
+    }
+
+    form {
+        width: 100%;
+        max-width: 400px;
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+
+        input {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid $border-color-light;
+            border-radius: 5px;
+            background-color: $message-background-light;
+            color: inherit;
+
+            &:focus {
+                outline: none;
+                border-color: $primary-color;
+            }
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: $primary-color;
+            border: none;
+            border-radius: 5px;
+            color: $text-light;
+            cursor: pointer;
+
+            &:hover {
+                opacity: 0.9;
+            }
+        }
+    }
+}
+
+.chat-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    border: 1px solid $border-color;
+    overflow: hidden;
+    margin: 10px;
+    min-height: 0;
+
+    #toggleThemeButton {
+        align-self: flex-end;
+        margin: 10px;
+        padding: 5px 10px;
+        background-color: transparent;
+        border: none;
+        color: inherit;
+        cursor: pointer;
+
+        i {
+            font-size: 1.5em;
+        }
+    }
+
+    .messages {
+        flex-grow: 1;
+        padding: 10px;
+        overflow-y: auto;
+        background-color: inherit;
+        min-height: 0;
+
+        .message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            max-width: 60%;
+            word-wrap: break-word;
+            position: relative;
+            clear: both;
+
+            &.own-message {
+                background-color: $primary-color;
+                color: $text-light;
+                border-radius: 15px 15px 4px 15px;
+                align-self: flex-end;
+                float: right;
+
+                &::after {
+                    content: "";
+                    position: absolute;
+                    right: -7px;
+                    bottom: 0px;
+                    width: 0;
+                    height: 0;
+                    border: 10px solid transparent;
+                    border-left-color: $primary-color;
+                    border-right: 0;
+                    border-bottom: 0;
+                    margin-top: -5px;
+                }
+            }
+
+            &.other-message {
+                background-color: $message-background-light;
+                color: $text-dark;
+                border-radius: 15px 15px 4px 15px;
+                align-self: flex-start;
+                float: left;
+
+                &::after {
+                    content: "";
+                    position: absolute;
+                    left: -7px;
+                    bottom: 0px;
+                    width: 0;
+                    height: 0;
+                    border: 10px solid transparent;
+                    border-left-color: $primary-color;
+                    border-right: 0;
+                    border-bottom: 0;
+                    margin-top: -5px;
+                }
+            }
+
+            .timestamp {
+                font-size: 0.8em;
+                color: #3a3a3a;
+                margin-right: 5px;
+            }
+        }
+    }
+
+    .message-input-container {
+        display: flex;
+        padding: 10px;
+        background-color: inherit;
+        align-items: center;
+        flex-shrink: 0;
+
+        #messageInput {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid $border-color;
+            border-radius: 5px;
+            margin-right: 10px;
+            background-color: $message-background-dark;
+            color: inherit;
+
+            &:focus {
+                outline: none;
+                border-color: $primary-color;
+            }
+        }
+
+        #sendButton {
+            padding: 10px 20px;
+            background-color: $primary-color;
+            border: none;
+            border-radius: 5px;
+            color: $text-light;
+            cursor: pointer;
+
+            &:hover {
+                opacity: 0.9;
+            }
+        }
+    }
+}
+
+body.light-mode {
+    .messages .message {
+        background-color: $message-background-light;
+    }
+
+    .message-input-container #messageInput {
+        background-color: $message-background-light;
+        border: 1px solid $border-color-light;
+    }
+
+    .chat-container {
+        border: 1px solid $border-color-light;
+    }
+
+    .messages .message.own-message {
+        background-color: $primary-color;
+        color: $text-light;
+    }
+
+    .messages .message.other-message {
+        background-color: $message-background-light;
+        color: $text-dark;
+    }
+}
+
+body.dark-mode {
+    .messages .message {
+        background-color: $message-background-dark;
+    }
+
+    .message-input-container #messageInput {
+        background-color: $message-background-dark;
+        border: 1px solid $border-color-dark;
+    }
+
+    .chat-container {
+        border: 1px solid $border-color-dark;
+    }
+
+    .messages .message.own-message {
+        background-color: $primary-color;
+        color: $text-light;
+    }
+
+    .messages .message.other-message {
+        background-color: $message-background-dark;
+        color: $text-light;
+    }
 }
