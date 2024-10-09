@@ -5,6 +5,7 @@ namespace ChatApp.Server.Hubs
 {
     public class ChatHub : Hub
     {
+        // Method for sending messages in the chat
         public async Task SendMessage (ChatMessage chatMessage)
         {
             if (string.IsNullOrWhiteSpace(chatMessage.User))
@@ -14,8 +15,6 @@ namespace ChatApp.Server.Hubs
 
             // Sanitize message to prevent XSS
             chatMessage.Message = System.Net.WebUtility.HtmlEncode(chatMessage.Message);
-
-            Console.WriteLine($"Broadcasting message from {chatMessage.User}: {chatMessage.Message}");
 
             await Clients.All.SendAsync("ReceiveMessage", chatMessage);
         }

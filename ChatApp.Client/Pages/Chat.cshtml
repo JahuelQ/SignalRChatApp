@@ -21,6 +21,7 @@
     <script>
         const username = "@Model.Username";
 
+        // Connection to the server
         const connection = new signalR.HubConnectionBuilder()
             .withUrl("https://localhost:5000/chathub",
                 {
@@ -30,16 +31,21 @@
         connection.on("ReceiveMessage", function (chatMessage) {
             console.log('Received message:', chatMessage);
 
+            // Add message to the div message
             const msg = document.createElement('div');
             msg.classList.add('message');
 
+            // Check if user and username is same
             if (chatMessage.user === username) {
                 msg.classList.add('own-message');
             }
 
+            // Create timestamp
             const time = new Date(chatMessage.timestamp);
+            // Format time and show only essential
             const formattedTime = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
+            // Post message
             msg.innerHTML = `<span class="timestamp">${formattedTime}</span> <strong>${chatMessage.user}:</strong> ${chatMessage.message}`;
             document.getElementById('messagesList').appendChild(msg);
 
@@ -48,6 +54,7 @@
 
         document.getElementById('sendButton').disabled = true;
 
+        // Connection and logging, if not connected the send button is disabled. Also log to console if connection failed
         connection.start()
             .then(function () {
                 console.log('Connected to SignalR hub.');
@@ -57,6 +64,7 @@
                 return console.error('SignalR Connection Error:', err.toString());
             });
 
+        // Function for sending the message
         function sendMessage() {
             const messageInput = document.getElementById('messageInput');
             const message = messageInput.value;
@@ -66,6 +74,7 @@
                     message: message,
                     timestamp: new Date()
                 };
+                // Logging to console if sent or not
                 connection.invoke('SendMessage', chatMessage)
                     .then(() => console.log('Message sent:', chatMessage))
                     .catch(function (err) {
@@ -78,10 +87,12 @@
             }
         }
 
+        // Send message by pressing button
         document.getElementById('sendButton').addEventListener('click', function () {
             sendMessage();
         });
 
+        // Send message by pressing enter
         document.getElementById('messageInput').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
